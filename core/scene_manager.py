@@ -8,3 +8,11 @@ class SceneManager:
 
     def get_scene(self):
         return self.current_scene
+
+
+class ShopManager:
+    def __init__(self):
+        self.shop_scene = "shop"
+
+    def get_scene(self):
+        return self.shop_scene

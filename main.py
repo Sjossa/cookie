@@ -1,40 +1,46 @@
-"""
-Point d'entrée du jeu Cookie Clicker.
-Gère l'affichage du menu et la boucle principale du jeu.
-"""
-
 import pygame
+import os
 from ui.menu_views import Menu
+from ui.game_view import Game
+from ui.shop_views import  Shop_Views
 from core.scene_manager import SceneManager
+from game.game_controller import ClickMenu, ClickGame, ClickShop
+from core.event_manager import EventManager,BonusItem
+SCORE_FILE = "score.json"
 
-pygame.init()  # pylint: disable=no-member
+
+pygame.init()
 screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption("Cookie Clicker")
 
 menu = Menu(screen)
+game = Game(screen)
 scene_manager = SceneManager()
-running = True  # pylint: disable=invalid-name
+event_manager = EventManager(game)
+bonus_item = BonusItem(event_manager)
 
+controller = ClickMenu(screen, scene_manager, menu, game)
+cookie_game = ClickGame(screen, scene_manager, menu, game, event_manager)
+
+
+
+running = True
 while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:  # pylint: disable=no-member
-            running = False  # pylint: disable=invalid-name
-        elif event.type == pygame.MOUSEBUTTONDOWN:  # pylint: disable=no-member
-            clicked = menu.click(event.pos)
-            if clicked == "jouer":
-                scene_manager.change_scene("jeu")
-            elif clicked == "quitter":
-                running = False  # pylint: disable=invalid-name
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            controller.menu_event(event)
+            if scene_manager.get_scene() == "jeu":
+                cookie_game.cookie_event(event)
 
-    # Dessiner selon la scène
-    if scene_manager.get_scene() == "menu":
-        menu.draw()
-    elif scene_manager.get_scene() == "jeu":
-        screen.fill((255, 255, 255))
-        font = pygame.font.Font(None, 50)
-        text_surface = font.render("Jeu lancé !", True, (0, 0, 0))
-        screen.blit(text_surface, (250, 400))
-
+    controller.draw()
+    if scene_manager.get_scene() == "jeu":
+        cookie_game.draw()
+        bonus_item.ClickBonus()
     pygame.display.flip()
 
-pygame.quit()  # pylint: disable=no-member
+pygame.quit()
+
+if os.path.exists(SCORE_FILE):
+    os.remove(SCORE_FILE)
