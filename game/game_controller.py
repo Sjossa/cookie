@@ -1,6 +1,7 @@
 import pygame
 from core.event_manager import EventManager, BuyItem
 
+
 class GameController:
     def __init__(self, screen, scene_manager, menu, game):
         self.screen = screen
@@ -15,6 +16,7 @@ class GameController:
         elif current_scene == "jeu":
             self.game.draw()
 
+
 class ClickMenu(GameController):
     def menu_event(self, event):
         if self.scene_manager.get_scene() == "menu":
@@ -22,6 +24,7 @@ class ClickMenu(GameController):
             if clicked == "jouer":
                 self.scene_manager.change_scene("jeu")
         return True
+
 
 class ClickGame(GameController):
     def __init__(self, screen, scene_manager, menu, game, event_manager):
@@ -35,6 +38,7 @@ class ClickGame(GameController):
     def cookie_event(self, event):
         self.event_manager.handle_click(event)
 
+
 class ClickShop:
     def __init__(self, shop, event_manager):
         self.shop = shop
@@ -42,6 +46,8 @@ class ClickShop:
 
     def shop_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.shop.rect.collidepoint(event.pos):
-                buy_action = BuyItem(self.event_manager)
-                buy_action.execute()
+            for i, item in enumerate(self.shop.items, start=1):
+                if item["rect"].collidepoint(event.pos):
+                    cost = item.get("price", 10)
+
+                    BuyItem(self.event_manager).execute(cost=cost, items_id=i)

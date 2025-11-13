@@ -2,7 +2,7 @@ import pygame
 import os
 from ui.menu_views import Menu
 from ui.game_view import Game
-from ui.shop_views import  Shop_Views
+from ui.shop_views import  ShopViews
 from core.scene_manager import SceneManager
 from game.game_controller import ClickMenu, ClickGame, ClickShop
 from core.event_manager import EventManager,BonusItem
@@ -41,6 +41,3 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
-
-if os.path.exists(SCORE_FILE):
-    os.remove(SCORE_FILE)
