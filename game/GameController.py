@@ -1,5 +1,5 @@
 import pygame
-from core.event_manager import EventManager, BuyItem
+from core.EventManager import EventManager, BuyItem
 
 
 class GameController:

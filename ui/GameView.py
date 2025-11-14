@@ -10,7 +10,6 @@ class Game:
         self.image = pygame.image.load("ui/assets/images/cookie.png").convert_alpha()
         self.original_image = pygame.transform.scale(self.image, (200, 200))
 
-
         self.center = (self.screen.get_width() // 2, self.screen.get_height() // 2)
 
         self.bouncing = False
@@ -31,8 +30,6 @@ class Game:
         self.screen.blit(self.image_to_draw, self.rect)
         score_text = self.font.render(f"Score : {score}", True, (255, 255, 255))
         self.screen.blit(score_text, (10, 10))
-
-
 
     def click_cookie(self):
         self.bouncing = True

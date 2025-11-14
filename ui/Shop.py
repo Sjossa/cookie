@@ -4,10 +4,10 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from shop_views import ShopViews
-from game.game_controller import ClickShop
-from core.event_manager import EventManager
-from game_view import Game
+from ui.ShopView import ShopViews
+from game.GameController import ClickShop
+from core.EventManager import EventManager
+from ui.GameView import Game
 
 # Initialisation Pygame
 pygame.init()
@@ -36,5 +36,3 @@ while running_shop:
     pygame.display.flip()
 
 pygame.quit()
-
-

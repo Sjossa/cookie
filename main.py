@@ -1,11 +1,11 @@
 import pygame
 import os
 from ui.menu_views import Menu
-from ui.game_view import Game
-from ui.shop_views import ShopViews
+from ui.GameView import Game
+from ui.ShopView import ShopViews
 from core.scene_manager import SceneManager
-from game.game_controller import ClickMenu, ClickGame, ClickShop
-from core.event_manager import EventManager, BuyItem
+from game.GameController import ClickMenu, ClickGame, ClickShop
+from core.EventManager import EventManager, BuyItem
 
 pygame.init()
 screen = pygame.display.set_mode((800, 800))
@@ -39,8 +39,10 @@ while running:
     if scene_manager.get_scene() == "jeu":
         game.update(dt)
         cookie_game.draw()
-        event_manager.ClickBonus()  
+        event_manager.ClickBonus()
 
     pygame.display.flip()
 
+if hasattr(event_manager, "shop_process"):
+    event_manager.shop_process.terminate()
 pygame.quit()
