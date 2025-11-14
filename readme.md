@@ -1,4 +1,3 @@
-Parfait Johnny, voici une version prête à mettre dans ton README, claire et concise pour que quelqu’un puisse installer ton jeu :
 
 ---
 
