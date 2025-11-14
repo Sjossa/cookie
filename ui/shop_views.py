@@ -1,26 +1,5 @@
+# shop_views.py
 import pygame
-
-
-class ShopStyle:
-    def __init__(self, screen):
-        self.screen = screen
-        self.font_title = pygame.font.SysFont("Arial", 36)
-        self.font_text = pygame.font.SysFont("Arial", 24)
-
-    def draw_background(self):
-        """Dégradé jaune → orange"""
-        height = self.screen.get_height()
-        for y in range(height):
-            color = (255, 255 - int(y / 4), 100)
-            pygame.draw.line(self.screen, color, (0, y),
-                             (self.screen.get_width(), y))
-
-    def draw_header(self):
-        title = self.font_title.render("Welcome to the Shop",
-                                       True, (60, 30, 10))
-        self.screen.blit(
-            title, (self.screen.get_width() // 2 - title.get_width() // 2, 20)
-        )
 
 
 class ShopViews:
@@ -28,57 +7,91 @@ class ShopViews:
         self.screen = screen
         self.font_text = pygame.font.SysFont("Arial", 24)
 
+        # Items classiques
         self.items = [
             {
                 "name": "Grand-mère",
                 "img_path": "ui/assets/images/grand_mere (1).png",
-                "price": 50,
+                "price": 10,
+                "id": 1,
             },
-            {"name": "Maison", "img_path": "ui/assets/images/pixel.webp",
-             "price": 200},
+            {
+                "name": "Maison",
+                "img_path": "ui/assets/images/pixel.webp",
+                "price": 50,
+                "id": 2,
+            },
+            {
+                "name": "Usine",
+                "img_path": "ui/assets/images/usine.png",
+                "price": 200,
+                "id": 3,
+            },
         ]
 
-        # Préparation des images et positions
-        spacing_y = 160
-        for i, item in enumerate(self.items):
-            image = pygame.image.load(item["img_path"]).convert_alpha()
+        # Power-ups
+        self.power_ups = [
+            {
+                "name": "Double Click",
+                "img_path": "ui/assets/images/double_click.webp",
+                "price": 1000,
+                "id": 101,
+            },
+            {
+                "name": "Auto Clicker",
+                "img_path": "ui/assets/images/Mega.webp",
+                "price": 1000,
+                "id": 102,
+            },
+            {
+                "name": "Mega Click",
+                "img_path": "ui/assets/images/Mega.webp",
+                "price": 700,
+                "id": 103,
+            },
+        ]
 
-            max_w, max_h = 100, 100
-            image = self.scale_image_to_fit(image, max_w, max_h)
+        # Préparer les images
+        self.prepare_images(self.items)
+        self.prepare_images(self.power_ups)
 
-            item["img"] = image
-            item["rect"] = image.get_rect(topleft=(140, 130 + i * spacing_y))
+    def prepare_images(self, items):
+        for item in items:
+            img = pygame.image.load(item["img_path"]).convert_alpha()
+            w, h = img.get_size()
+            ratio = min(100 / w, 100 / h)
+            item["img"] = pygame.transform.smoothscale(
+                img, (int(w * ratio), int(h * ratio))
+            )
+            item["rect"] = item["img"].get_rect()  # x,y sera défini plus tard
 
-    def scale_image_to_fit(self, image, max_width, max_height):
-        """Redimensionne l'image pour qu'elle tienne dans une zone donnée."""
-        w, h = image.get_size()
-        ratio = min(max_width / w, max_height / h)
-        new_size = (int(w * ratio), int(h * ratio))
-        return pygame.transform.smoothscale(image, new_size)
+    def draw_card(self, item, x, y, width=250):
+        card_rect = pygame.Rect(x, y - 20, width, 140)
+        # Fond
+        pygame.draw.rect(self.screen, (250, 240, 210), card_rect, border_radius=10)
+        pygame.draw.rect(self.screen, (180, 150, 100), card_rect, 3, border_radius=10)
+
+        # Image
+        img_rect = item["img"].get_rect(midleft=(card_rect.x + 60, card_rect.centery))
+        self.screen.blit(item["img"], img_rect)
+
+        # Texte
+        name_surf = self.font_text.render(item["name"], True, (50, 30, 0))
+        price_surf = self.font_text.render(
+            f"Prix : {item['price']}", True, (80, 50, 10)
+        )
+        self.screen.blit(name_surf, (img_rect.right + 20, card_rect.y + 30))
+        self.screen.blit(price_surf, (img_rect.right + 20, card_rect.y + 75))
+
+        # Met à jour le rect pour la détection des clics
+        item["rect"].x = card_rect.x
+        item["rect"].y = card_rect.y
+        item["rect"].width = card_rect.width
+        item["rect"].height = card_rect.height
 
     def draw(self):
-        """Affiche chaque carte d’objet"""
-        for item in self.items:
-            card_rect = pygame.Rect(100, item["rect"].y - 20, 600, 140)
-
-            # Fond de carte
-            pygame.draw.rect(self.screen, (250, 240, 210), card_rect,
-                             border_radius=10)
-            pygame.draw.rect(
-                self.screen, (180, 150, 100), card_rect, 3, border_radius=10
-            )
-
-            img_rect = item["img"].get_rect(
-                midleft=(card_rect.x + 80, card_rect.centery)
-            )
-            self.screen.blit(item["img"], img_rect)
-
-            name_text = self.font_text.render(item["name"], True, (50, 30, 0))
-            price_text = self.font_text.render(
-                f"Prix : {item['price']}", True, (80, 50, 10)
-            )
-
-            self.screen.blit(name_text, (img_rect.right + 40,
-                                         card_rect.y + 30))
-            self.screen.blit(price_text, (img_rect.right + 40,
-                                          card_rect.y + 75))
+        spacing_y = 160
+        for i, item in enumerate(self.items):
+            self.draw_card(item, 100, 130 + i * spacing_y)
+        for i, item in enumerate(self.power_ups):
+            self.draw_card(item, 400, 130 + i * spacing_y)

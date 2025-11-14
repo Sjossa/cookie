@@ -36,6 +36,7 @@ class ClickGame(GameController):
             self.game.draw(self.event_manager.score)
 
     def cookie_event(self, event):
+        """Gère le clic sur le cookie"""
         self.event_manager.handle_click(event)
 
 
@@ -46,8 +47,15 @@ class ClickShop:
 
     def shop_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            for i, item in enumerate(self.shop.items, start=1):
+            # Items classiques
+            for item in self.shop.items:
                 if item["rect"].collidepoint(event.pos):
-                    cost = item.get("price", 10)
-
-                    BuyItem(self.event_manager).execute(cost=cost, items_id=i)
+                    BuyItem(self.event_manager).execute(
+                        cost=item["price"], items_id=item["id"]
+                    )
+            # Power-ups
+            for item in self.shop.power_ups:
+                if item["rect"].collidepoint(event.pos):
+                    BuyItem(self.event_manager).execute(
+                        cost=item["price"], items_id=item["id"]
+                    )
